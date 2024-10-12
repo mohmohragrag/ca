@@ -15,8 +15,8 @@
         <select id="sectionType" onchange="showFields()">
             <option value="">--Select--</option>
             <option value="Steel Plates and Sheets">Steel Plates and Sheets</option>
-            <option value="Chequered Steel Plates">Chequered and Pine Steel Plates</option> <!-- الصاج البقلاوه -->
-            <option value="Seamless Steel Pipes - Circular">ERW Steel Pipes - Circular</option>
+            <option value="Chequered Steel Plates">Chequered Steel Plates</option>
+            <option value="Seamless Steel Pipes - Circular">Seamless Steel Pipes - Circular</option>
             <option value="Hollow Structural Sections - Square">Hollow Structural Sections - Square</option>
             <option value="Hollow Structural Sections - Rectangular">Hollow Structural Sections - Rectangular</option>
             <option value="Round Steel Bars">Round Steel Bars</option>
@@ -25,7 +25,7 @@
             <option value="Equal Angles">Equal Angles</option>
             <option value="Unequal Angles">Unequal Angles</option>
             <option value="T-profile">T-profile</option>
-            <option value="Hexagonal Sections">Hexagonal Bars</option>
+            <option value="Hexagonal Sections">Hexagonal Sections</option>
             <option value="UPN">UPN</option>
             <option value="IPN">IPN</option>
             <option value="IPE">IPE</option>
@@ -35,8 +35,10 @@
 
         <div id="fields" class="fields"></div>
 
-        <img id="sectionImage" src="" alt="Section Image" style="display: none;">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter quantity" value="1" oninput="calculateWeight()">
 
+        <img id="sectionImage" src="" alt="Section Image" style="display: none;">
 
         <div id="result" class="result"></div>
     </div>
