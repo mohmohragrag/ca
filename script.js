@@ -50,6 +50,7 @@ function showFields() {
 function calculateWeight() {
     const sectionType = document.getElementById("sectionType").value;
     const fields = document.getElementById("fields").children;
+    const quantity = parseFloat(document.getElementById("quantity").value) || 1; // Default to 1 if not a valid number
     const density = 7850; // kg/m³ for steel
     let weight = 0;
 
@@ -74,23 +75,17 @@ function calculateWeight() {
                 break;
 
             case "Seamless Steel Pipes - Circular":
-                    const [lengthPipe, outerDiameter, thicknessPipe] = values;
-                    weight = ((outerDiameter - thicknessPipe) * thicknessPipe * lengthPipe * 0.025) / 1000 ;
-
-                    break;
-                
+                const [lengthPipe, outerDiameter, thicknessPipe] = values;
+                weight = ((outerDiameter - thicknessPipe) * thicknessPipe * lengthPipe * 0.025) / 1000;
+                break;
 
             case "Hollow Structural Sections - Square":
-                    const [lengthSquare, sideLengthSquare, thicknessSquare] = values;
-                    const lengthM = lengthSquare / 1000; // تحويل الطول إلى متر
-                    const sideLengthM = sideLengthSquare / 1000; // تحويل طول الضلع إلى متر
-                    const thicknessM = thicknessSquare / 1000; // تحويل السمك إلى متر
-                
-                    // حساب الوزن بناءً على الصيغة المعطاة:
-                    weight = (sideLengthM - thicknessM) * thicknessM * 0.025 * lengthM;
-                    break;
-                
-                
+                const [lengthSquare, sideLengthSquare, thicknessSquare] = values;
+                const lengthM = lengthSquare / 1000; // Convert length to meters
+                const sideLengthM = sideLengthSquare / 1000; // Convert side length to meters
+                const thicknessM = thicknessSquare / 1000; // Convert thickness to meters
+                weight = (sideLengthM - thicknessM) * thicknessM * 0.025 * lengthM;
+                break;
 
             case "Hollow Structural Sections - Rectangular":
                 const [lengthRect, widthRect, heightRect, thicknessRect] = values;
@@ -113,59 +108,38 @@ function calculateWeight() {
                 break;
 
             case "Equal Angles":
-                const [lengthAngle, legLengthAngle, thicknessAngle] = values;
-                weight = 2 * (lengthAngle / 1000) * (legLengthAngle / 1000) * (thicknessAngle / 1000) * density;
-                break;
-
+                    const [lengthEqual, legLengthEqual, thicknessEqual] = values;
+                    weight = (lengthEqual / 1000) * ((legLengthEqual / 1000) * (legLengthEqual / 1000) - ((legLengthEqual - thicknessEqual) / 1000) * ((legLengthEqual - thicknessEqual) / 1000)) * density;
+                    break;
+    
             case "Unequal Angles":
-                const [lengthUnequalAngle, legLength1, legLength2, thicknessUnequal] = values;
-                weight = (lengthUnequalAngle / 1000) *
-                    (
-                        (legLength1 / 1000 * thicknessUnequal / 1000) +
-                        (legLength2 / 1000 * thicknessUnequal / 1000) -
-                        Math.pow(thicknessUnequal / 1000, 2)
-                    ) * density;
-                break;
-
+                    const [lengthUnequal, legLength1Unequal, legLength2Unequal, thicknessUnequal] = values;
+                    weight = (lengthUnequal / 1000) * (((legLength1Unequal / 1000) * (legLength2Unequal / 1000)) - (((legLength1Unequal - thicknessUnequal) / 1000) * ((legLength2Unequal - thicknessUnequal) / 1000))) * density;
+                    break;
+    
             case "T-profile":
                     const [lengthT, widthT, heightT, thicknessT] = values;
-                    weight = (lengthT / 1000) * (
-                        (widthT / 1000 * thicknessT / 1000) +
-                        ((heightT - thicknessT) / 1000 * thicknessT / 1000)
-                    ) * density;
-                
-                    // إضافة صورة
-                    const img = document.createElement("img");
-                    img.src = "image/t_profile.png"; // المسار إلى الصورة
-                    img.alt = ""; // نص بديل للصورة
-                    img.style.width = "200px"; // تعيين عرض الصورة (يمكنك تعديله حسب الحاجة)
-                    img.style.height = "auto"; // تعيين ارتفاع الصورة ليبقى متناسبًا
-                
-                    // إضافة الصورة إلى عنصر مناسب في HTML
-                    document.getElementById("imageContainer").appendChild(img); // تأكد من وجود عنصر بهذا المعرف في HTML
-                
+                    weight = (lengthT / 1000) * ((widthT / 1000) * (heightT / 1000) - ((widthT - 2 * thicknessT) / 1000) * ((heightT - thicknessT) / 1000)) * density;
                     break;
-                
-
-            
-            case "Hexagonal Sections": {
-                    const [lengthHexagon, flatToFlatDistance] = values; // المسافة بين الجوانب المتقابلة
-                    const sideLength = flatToFlatDistance / Math.sqrt(3); // حساب طول الجانب بناءً على المسافة بين الجوانب المتقابلة
-                    
-                    // Calculate the area of the hexagonal section
-                    const areaHexagon = (3 * Math.sqrt(3) / 2) * Math.pow(sideLength, 2);
-                    
-                    // Calculate the weight: طول × المساحة × الكثافة (الوزن = الطول × المساحة × الكثافة)
-                    weight = lengthHexagon * areaHexagon * (density / 1000000); // kg
+    
+            case "Hexagonal Sections":
+                    const [lengthHex, flatToFlat] = values;
+                    const hexArea = (3 * Math.sqrt(3) / 2) * Math.pow((flatToFlat / 1000), 2);
+                    weight = lengthHex * hexArea * density / 1000; // Convert to kg
                     break;
-                }
-                
-
+    
             default:
-                document.getElementById("result").innerHTML = "Please enter valid dimensions.";
-                return;
+                    document.getElementById("result").innerHTML = "Invalid section type.";
+                    return;
+            }
+    
+            // Multiply by quantity
+            weight *= quantity;
+    
+            // Display the result
+            document.getElementById("result").innerHTML = `Total Weight: ${weight.toFixed(2)} kg`;
+        } else {
+            document.getElementById("result").innerHTML = "Please select a section type and enter valid dimensions.";
         }
-
-        document.getElementById("result").innerHTML = `Weight: ${weight.toFixed(2)} kg`;
     }
-}
+    
